@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 class AddProductModel {
+  final String? id;
   final String cateId;
   final String productName;
   final double price;
@@ -9,6 +10,7 @@ class AddProductModel {
   final Uint8List? image;
 
   AddProductModel({
+    this.id,
     required this.cateId,
     required this.productName,
     required this.price,
@@ -18,6 +20,7 @@ class AddProductModel {
   });
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'cateId': cateId,
         'productName': productName,
         'price': price,

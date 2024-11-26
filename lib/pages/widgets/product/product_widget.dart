@@ -149,8 +149,22 @@ class _ProductWidgetState extends State<ProductWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: () {
-                  // Implement edit functionality if needed
+                onTap: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddProduct(
+                        product: product,
+                        onProductAdded: () {
+                          _refreshController.add(true);
+                        },
+                      ),
+                    ),
+                  );
+
+                  if (result == true) {
+                    // Refresh handled by onProductAdded callback
+                  }
                 },
                 child: const Text('Edit'),
               ),

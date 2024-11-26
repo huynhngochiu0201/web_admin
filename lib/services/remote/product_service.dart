@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../../entities/models/add_product_model.dart';
 import '../../entities/models/product_model.dart';
-import '../../entities/models/update_product_model.dart';
 import '../../constants/define_collection.dart';
 
 class ProductService {
@@ -47,9 +46,9 @@ class ProductService {
   }
 
   // Cập nhật sản phẩm
-  Future<void> updateProduct(UpdateProductModel product) async {
+  Future<void> updateProduct(AddProductModel product) async {
     try {
-      String imageId = product.productId!;
+      String imageId = product.id!;
       String imageStoragePath =
           '/${AppDefineCollection.APP_PRODUCT}/${product.cateId}/$imageId';
 
@@ -65,7 +64,7 @@ class ProductService {
 
       await _firestore
           .collection(AppDefineCollection.APP_PRODUCT)
-          .doc(product.productId)
+          .doc(product.id)
           .update(productData);
     } catch (e) {
       throw Exception('Error updating product: $e');

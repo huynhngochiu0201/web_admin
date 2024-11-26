@@ -12,11 +12,18 @@ import '../../../constants/app_color.dart';
 import '../../../constants/define_collection.dart';
 import '../../../entities/models/add_product_model.dart';
 import '../../../entities/models/category_model.dart';
+import '../../../entities/models/product_model.dart';
 import '../../../services/remote/product_service.dart';
 
 class AddProduct extends StatefulWidget {
   final VoidCallback? onProductAdded;
-  const AddProduct({super.key, this.onProductAdded});
+  final ProductModel? product;
+
+  const AddProduct({
+    super.key,
+    this.onProductAdded,
+    this.product,
+  });
 
   @override
   State<AddProduct> createState() => _AddProductState();
@@ -42,7 +49,17 @@ class _AddProductState extends State<AddProduct> {
   @override
   void initState() {
     super.initState();
-    _fetchCategories();
+    _fetchCategories().then((_) {
+      if (widget.product != null) {
+        _nameController.text = widget.product!.name;
+        _priceController.text = widget.product!.price.toString();
+        _quantityController.text = widget.product!.quantity.toString();
+        _descriptionController.text = widget.product!.description ?? '';
+        _selectedCategory = _categories.firstWhere(
+            (category) => category.id == widget.product!.categoryId);
+        setState(() {});
+      }
+    });
   }
 
   Future<void> _fetchCategories() async {
@@ -96,28 +113,41 @@ class _AddProductState extends State<AddProduct> {
     });
 
     try {
-      final addProductModel = AddProductModel(
-        cateId:
-            _selectedCategory!.id, // Assuming you have an id in CategoryModel
-        productName: _nameController.text.trim(),
-        price: double.parse(_priceController.text.trim()),
-        quantity: int.parse(_quantityController.text.trim()),
-        description: _descriptionController.text.trim(),
-        image: _selectedImage,
-      );
+      if (widget.product != null) {
+        final addProductModel = AddProductModel(
+          id: widget.product!.id,
+          cateId: _selectedCategory!.id,
+          productName: _nameController.text.trim(),
+          price: double.parse(_priceController.text.trim()),
+          quantity: int.parse(_quantityController.text.trim()),
+          description: _descriptionController.text.trim(),
+          image: _selectedImage,
+        );
+        await ProductService().updateProduct(addProductModel);
+        showTopSnackBar(context,
+            const TDSnackBar.success(message: 'Product updated successfully'));
+      } else {
+        final addProductModel = AddProductModel(
+          id: widget.product?.id,
+          cateId: _selectedCategory!.id,
+          productName: _nameController.text.trim(),
+          price: double.parse(_priceController.text.trim()),
+          quantity: int.parse(_quantityController.text.trim()),
+          description: _descriptionController.text.trim(),
+          image: _selectedImage,
+        );
+        await ProductService().addNewProduct(addProductModel);
+        showTopSnackBar(context,
+            const TDSnackBar.success(message: 'Product added successfully'));
+      }
 
-      await ProductService().addNewProduct(addProductModel);
       widget.onProductAdded?.call();
-
-      showTopSnackBar(context,
-          const TDSnackBar.success(message: 'Product added successfully'));
-      // Clear the form and reset state
       _formKey.currentState!.reset();
       _resetState();
       Navigator.pop(context);
     } catch (e) {
       showTopSnackBar(
-          context, TDSnackBar.error(message: 'Failed to add product: $e'));
+          context, TDSnackBar.error(message: 'Operation failed: $e'));
     } finally {
       setState(() {
         _isLoading = false;
