@@ -1,0 +1,85 @@
+import 'package:flutter/material.dart';
+
+class AppColor {
+  AppColor._();
+  static const Color red = Colors.red;
+  static const Color green = Colors.green;
+  static const Color blue = Colors.blue;
+  static const Color primary = Color(0xFFF19b15);
+  static const Color dark500 = Color(0xFF33495D);
+  static const Color black = Colors.black;
+  static const Color white = Colors.white;
+  static const Color grey = Colors.grey;
+  static const Color brown = Colors.brown;
+  static const Color pink = Colors.pink;
+  static const Color yellow = Colors.yellow;
+  static const Color orange = Colors.orange;
+  static const Color bgColor = Color(0xFFEEEFF5);
+  static const Color brown1 = Color(0XFF7C7D7E);
+  static const Color shadow = Colors.black26;
+  static const Color bgfb = Color(0XFF3B5998);
+  static const Color bglogin = Color(0XFFFC6011);
+  static const Color bggg = Color.fromARGB(255, 182, 44, 16);
+  static const Color primaryColor = Colors.orange;
+  static const Color secondaryColor = Colors.black54;
+  static const Color bgaddimages = Color(0xfff09840);
+  static Color gradientFirst = const Color(0xff0f17ad);
+  static Color gradientSecond = const Color(0xFF6985e8);
+  static Color homePageBackground = const Color(0xFFfbfcff);
+  static Color homePageTitle = const Color(0xFF302f51);
+  static Color homePageSubtitle = const Color(0xFF414160);
+  static Color homePageDetail = const Color(0xFF6588f4);
+  static Color homePageIcons = const Color(0xFF3b3c5c);
+  static Color homePageContainerTextSmall = const Color(0xFFf4f5fd);
+  static Color homePageContainerTextBig = const Color(0xFFffffff);
+  static Color homePagePlanColor = const Color(0xFFa2a2b1);
+  static const backgroundColor = Color(0xFF09090C);
+  static const appBarColor = Color(0xFF141414);
+  static const primaryLight = Color(0xFFB3F5FC);
+  static const primaryDark = Color(0xFF03ACF2);
+  static const secondaryLight = Color(0xFFB3F5FC);
+  static const secondaryDark = Color(0xFF03ACF2);
+  static const accentColor = Color(0xFF03ACF2);
+  static const accentLight = Color(0xFFB3F5FC);
+  static const accentDark = Color(0xFF03ACF2);
+  static const errorColor = Color(0xFFE53935);
+  static const whiteColor = Color(0xffffffff);
+  static const blue700 = Color(0xff1976D2);
+  static const blackColor = Colors.black;
+  static var green500 = Colors.green[500];
+  static var grey200 = Colors.grey[200];
+  static var grey400 = Colors.grey[400];
+  static var grey700 = Colors.grey[700];
+  static var grey800 = Colors.grey[800];
+  static var grey900 = Colors.grey[900];
+  static var grey300 = Colors.grey[300];
+  static var grey500 = Colors.grey[500];
+  static const c_DC349E = Color(0xFFDC349E);
+  static const c_31D0D0 = Color(0xFF31D0D0);
+  static const c_111D1B = Color(0xFF111D1B);
+  static const c_09090C = Color(0xFF09090C);
+
+  //
+  static const E7E8E9 = Color(0xFFE7E8E9);
+  static const E3A2C27 = Color(0xff3a2c27);
+  static const E464447 = Color(0xFF464447);
+  static const E43484B = Color(0xFF43484B);
+  static const D6D6D6 = Color(0xFFD6D6D6);
+  static const E2D201C = Color(0xFF2D201C);
+  static const BEBFC4 = Color(0xFFBEBFC4);
+  static const F8F8FA = Color(0xFFF8F8FA);
+  static const F9F9F9 = Color(0xFFF9F9F9);
+  static const E343434 = Color(0xFF343434);
+  static const E508A7B = Color(0xFF508A7B);
+  static const E5009254 = Color(0xFF009254);
+  static const ECF6212 = Color(0xFFCF6212);
+  static const EC50000 = Color(0xFFC50000);
+  static const E575757 = Color(0xFF575757);
+  static const Ee9ede4 = Color(0xFFe9ede4);
+  static const Efbf8f1 = Color(0xFFfbf8f1);
+  static const Efbfef8 = Color(0xFFfbfef8);
+  static const E8A8A8F = Color(0xFF8A8A8F);
+  static const Ef5f5f5 = Color(0xFFf5f5f5);
+
+  // f5f5f5
+}
