@@ -9,6 +9,17 @@ import '../../../constants/app_color.dart';
 import '../../../constants/app_style.dart';
 import '../../../entities/models/product_model.dart';
 import '../../../services/remote/product_service.dart';
+import 'package:intl/intl.dart';
+
+class ColumnData {
+  final String title;
+  final double width;
+
+  const ColumnData({
+    required this.title,
+    required this.width,
+  });
+}
 
 class ProductWidget extends StatefulWidget {
   const ProductWidget({super.key});
@@ -20,6 +31,13 @@ class ProductWidget extends StatefulWidget {
 class _ProductWidgetState extends State<ProductWidget> {
   late Future<List<ProductModel>> _productsFuture;
   final StreamController<bool> _refreshController = StreamController<bool>();
+
+  List<ColumnData> get columns => const [
+        ColumnData(title: 'Product', width: 100),
+        ColumnData(title: 'Quantity', width: 100),
+        ColumnData(title: 'Price', width: 100),
+        ColumnData(title: 'Time', width: 100),
+      ];
 
   @override
   void initState() {
@@ -97,11 +115,12 @@ class _ProductWidgetState extends State<ProductWidget> {
 
   Widget _buildProductRow(ProductModel product) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 height: 100,
@@ -111,7 +130,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   border: Border.all(color: Colors.grey.shade200),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(5.0),
                   child: Image.network(
                     product.image ?? '-',
                     fit: BoxFit.cover,
@@ -145,6 +164,15 @@ class _ProductWidgetState extends State<ProductWidget> {
           const SizedBox(width: 10.0),
           SizedBox(width: 160, child: Text(product.quantity.toString())),
           SizedBox(width: 160, child: Text(product.price.toVND())),
+          SizedBox(
+            width: 100,
+            child: Text(
+              product.createAt != null
+                  ? DateFormat('dd/MM/yyyy HH:mm')
+                      .format(product.createAt!.toDate())
+                  : '-',
+            ),
+          ),
           const Spacer(),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,6 +230,25 @@ class _ProductWidgetState extends State<ProductWidget> {
     );
   }
 
+  Widget _buildTableHeader() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0),
+      child: Row(
+        children: [
+          for (var i = 0; i < columns.length; i++) ...[
+            SizedBox(
+              width: columns[i].width,
+              child: Text(columns[i].title),
+            ),
+            if (i == 0) const SizedBox(width: 410.0),
+            if (i > 0 && i < columns.length - 1) const SizedBox(width: 70.0),
+            if (i == columns.length - 1) const SizedBox(width: 55.0),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -223,6 +270,8 @@ class _ProductWidgetState extends State<ProductWidget> {
               ],
             ),
             const SizedBox(height: 20.0),
+            _buildTableHeader(),
+            const SizedBox(height: 10.0),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(

@@ -46,26 +46,48 @@ class ProductService {
   }
 
   // Cập nhật sản phẩm
-  Future<void> updateProduct(AddProductModel product) async {
+  Future<void> updateProduct(String productId, AddProductModel product) async {
     try {
-      String imageId = product.id!;
-      String imageStoragePath =
-          '/${AppDefineCollection.APP_PRODUCT}/${product.cateId}/$imageId';
-
-      final Map<String, dynamic> productData = product.toJson();
-
+      String imageUrl = '';
+      
+      // Nếu có ảnh mới, upload và lấy URL
       if (product.image != null) {
+        String imageStoragePath = 
+            '/${AppDefineCollection.APP_PRODUCT}/${product.cateId}/$productId';
+        
+        // Xóa ảnh cũ nếu có
+        try {
+          final Reference oldRef = _storage.ref().child(imageStoragePath);
+          await oldRef.delete();
+        } catch (e) {
+          // Bỏ qua lỗi nếu không có ảnh cũ
+        }
+
+        // Upload ảnh mới
         final Reference ref = _storage.ref().child(imageStoragePath);
         final UploadTask uploadTask = ref.putData(product.image!);
-        final TaskSnapshot taskSnapshot = await uploadTask;
-        final String imageUrl = await taskSnapshot.ref.getDownloadURL();
-        productData['image'] = imageUrl;
+        final TaskSnapshot downloadUrl = await uploadTask;
+        imageUrl = await downloadUrl.ref.getDownloadURL();
+      }
+
+      // Cập nhật thông tin sản phẩm
+      final Map<String, dynamic> updateData = {
+        'categoryId': product.cateId,
+        'name': product.productName,
+        'price': product.price,
+        'description': product.description,
+        'quantity': product.quantity,
+      };
+
+      // Chỉ cập nhật URL ảnh nếu có ảnh mới
+      if (imageUrl.isNotEmpty) {
+        updateData['image'] = imageUrl;
       }
 
       await _firestore
           .collection(AppDefineCollection.APP_PRODUCT)
-          .doc(product.id)
-          .update(productData);
+          .doc(productId)
+          .update(updateData);
     } catch (e) {
       throw Exception('Error updating product: $e');
     }

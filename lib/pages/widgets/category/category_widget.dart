@@ -121,49 +121,51 @@ class _CategoryWidgetState extends State<CategoryWidget> {
 
   // Cải thiện phần hiển thị danh sách
   Widget _buildCategoryItem(CategoryModel category) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              height: 100,
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5.0),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  category.image ?? '-',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(child: Icon(Icons.error));
-                  },
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const Center(child: CircularProgressIndicator());
-                  },
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5.0),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5.0),
+                  child: Image.network(
+                    category.image ?? '-',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(child: Icon(Icons.error));
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 10.0),
-            SizedBox(
-              width: 400,
-              child: Text(
-                category.name ?? 'Không có tên',
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+              const SizedBox(width: 10.0),
+              SizedBox(
+                width: 400,
+                child: Text(
+                  category.name ?? 'Không có tên',
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-          ],
-        ),
-        const Spacer(),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-             GestureDetector(
+            ],
+          ),
+          const Spacer(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
                 onTap: () async {
                   final result = await Navigator.push(
                     context,
@@ -183,13 +185,14 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                 },
                 child: const Text('Edit'),
               ),
-            GestureDetector(
-              onTap: () => _deleteCategory(context, category),
-              child: const Text('Delete'),
-            ),
-          ],
-        ),
-      ],
+              GestureDetector(
+                onTap: () => _deleteCategory(context, category),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

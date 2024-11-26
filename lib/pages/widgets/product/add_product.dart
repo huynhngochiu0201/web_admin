@@ -123,7 +123,8 @@ class _AddProductState extends State<AddProduct> {
           description: _descriptionController.text.trim(),
           image: _selectedImage,
         );
-        await ProductService().updateProduct(addProductModel);
+        await ProductService()
+            .updateProduct(addProductModel.id ?? '', addProductModel);
         showTopSnackBar(context,
             const TDSnackBar.success(message: 'Product updated successfully'));
       } else {
