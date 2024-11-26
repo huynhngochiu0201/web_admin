@@ -64,10 +64,19 @@ class PayloadService {
     String name,
     double price,
   ) async {
-    await FirebaseFirestore.instance.collection('payloads').doc(id).update({
-      'name': name,
-      'price': price,
-    });
+    try {
+      await _firestore
+          .collection(AppDefineCollection.APP_PAYLOAD)
+          .doc(id)
+          .update({
+        'name': name,
+        'price': price,
+        'updateAt': Timestamp.now(),
+      });
+      print('Payload updated successfully!');
+    } catch (e) {
+      throw Exception('Failed to update payload: $e');
+    }
   }
 
   Future<void> updatePayload({
@@ -75,6 +84,17 @@ class PayloadService {
     required String name,
     required double price,
   }) async {
-    // Implement your update service API call here
+    try {
+      await _firestore
+          .collection(AppDefineCollection.APP_PAYLOAD)
+          .doc(id)
+          .update({
+        'name': name,
+        'price': price,
+      });
+      print('Payload updated successfully!');
+    } catch (e) {
+      throw Exception('Failed to update payload: $e');
+    }
   }
 }

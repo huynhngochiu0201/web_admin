@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class AreaModel {
   final String id;
   final String? name;
-  final double? price;
+  final double price;
   final Timestamp? createAt;
 
   AreaModel({
     required this.id,
     this.name,
-    this.price,
+    required this.price,
     this.createAt,
   });
 
@@ -17,7 +17,7 @@ class AreaModel {
     return AreaModel(
       id: json['id'] as String,
       name: json['name'] as String?,
-      price: json['price'] as double?,
+      price: json['price'] as double,
       createAt: json['createAt'] as Timestamp?,
     );
   }

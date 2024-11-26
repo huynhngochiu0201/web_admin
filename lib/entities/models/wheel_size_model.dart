@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WheelSizeModel {
-  final double? price;
+  final double price;
   final String id;
   final String? name;
   final Timestamp? createAt;
@@ -9,7 +9,7 @@ class WheelSizeModel {
   WheelSizeModel({
     required this.id,
     this.name,
-    this.price,
+    required this.price,
     this.createAt,
   });
 
@@ -17,7 +17,7 @@ class WheelSizeModel {
     return WheelSizeModel(
       id: json['id'] as String,
       name: json['name'] as String?,
-      price: json['price'] as double?,
+      price: json['price'] as double,
       createAt: json['createAt'] as Timestamp?,
     );
   }

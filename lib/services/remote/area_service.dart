@@ -64,17 +64,15 @@ class AreaService {
     String name,
     double price,
   ) async {
-    await FirebaseFirestore.instance.collection('areas').doc(id).update({
-      'name': name,
-      'price': price,
-    });
-  }
-
-  Future<void> updateArea({
-    required String id,
-    required String name,
-    required double price,
-  }) async {
-    // Implement your update service API call here
+    try {
+      await _firestore.collection(AppDefineCollection.APP_AREA).doc(id).update({
+        'name': name,
+        'price': price,
+        'updateAt': Timestamp.now(),
+      });
+      print('Area updated successfully!');
+    } catch (e) {
+      throw Exception('Failed to update area: $e');
+    }
   }
 }

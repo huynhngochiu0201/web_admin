@@ -36,11 +36,11 @@ class _ServiceWidgetState extends State<ServiceWidget>
             Row(
               children: [Text('Service', style: AppStyle.textHeader)],
             ),
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 10.0),
             Container(
-              height: 40.0,
+              height: 50.0,
               padding: const EdgeInsets.all(6.0),
-              margin: const EdgeInsets.symmetric(horizontal: 25.0),
+              //margin: const EdgeInsets.symmetric(horizontal: 25.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(22.0),
                 color: Colors.transparent,
@@ -61,6 +61,7 @@ class _ServiceWidgetState extends State<ServiceWidget>
                 ],
               ),
             ),
+            const SizedBox(height: 10.0),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(

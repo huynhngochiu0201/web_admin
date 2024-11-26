@@ -64,20 +64,17 @@ class WheelSizeService {
     String name,
     double price,
   ) async {
-    await FirebaseFirestore.instance
-        .collection(AppDefineCollection.APP_WHEEL_SIZE)
-        .doc(id)
-        .update({
-      'name': name,
-      'price': price,
-    });
-  }
-
-  Future<void> updateWheelSize({
-    required String id,
-    required String name,
-    required double price,
-  }) async {
-    // Implement your update service API call here
+    try {
+      await _firestore  
+          .collection(AppDefineCollection.APP_WHEEL_SIZE)
+          .doc(id)
+          .update({
+        'name': name,
+        'price': price,
+      });
+      print('Wheel size updated successfully!');
+    } catch (e) {
+      throw Exception('Failed to update wheel size: $e');
+    }
   }
 }
