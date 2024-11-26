@@ -8,22 +8,25 @@ import '../../../components/app_bar/custom_app_bar.dart';
 import '../../../components/snack_bar/td_snack_bar.dart';
 import '../../../components/snack_bar/top_snack_bar.dart';
 import '../../../constants/app_color.dart';
+import '../../../entities/models/category_model.dart';
 import '../../../services/remote/category_service.dart';
 
 class AddCategory extends StatefulWidget {
-   final VoidCallback? onCategoryAdded;
+  final VoidCallback? onCategoryAdded;
+  final CategoryModel? category;
 
   const AddCategory({
-    Key? key,
+    super.key,
     this.onCategoryAdded,
-  }) : super(key: key);
+    this.category,
+  });
 
   @override
   State<AddCategory> createState() => _AddCategoryState();
 }
 
 class _AddCategoryState extends State<AddCategory> {
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final CategoryService _categoryService = CategoryService();
   Uint8List? _selectedImage;
   bool _isLoading = false;
@@ -31,8 +34,16 @@ class _AddCategoryState extends State<AddCategory> {
   final ImagePicker _picker = ImagePicker();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.category != null) {
+      _nameController.text = widget.category!.name ?? '';
+    }
+  }
+
+  @override
   void dispose() {
-    nameController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -55,7 +66,7 @@ class _AddCategoryState extends State<AddCategory> {
   Future<void> _submitCategory() async {
     if (_isLoading) return;
 
-    final String name = nameController.text.trim();
+    final String name = _nameController.text.trim();
     if (name.isEmpty) {
       showTopSnackBar(
         context,
@@ -77,10 +88,18 @@ class _AddCategoryState extends State<AddCategory> {
     });
 
     try {
-      await _categoryService.addNewCategory(
-        name: name,
-        imageBytes: _selectedImage!,
-      );
+      if (widget.category != null) {
+        await _categoryService.updateCategory(
+          id: widget.category!.id,
+          name: name,
+          imageBytes: _selectedImage!,
+        );
+      } else {
+        await _categoryService.addNewCategory(
+          name: name,
+          imageBytes: _selectedImage!,
+        );
+      }
 
       if (!mounted) return; // Kiểm tra widget còn mounted không
 
@@ -112,7 +131,9 @@ class _AddCategoryState extends State<AddCategory> {
     return Stack(
       children: [
         Scaffold(
-          appBar: CustomAppBar(title: 'Add Category'),
+          appBar: CustomAppBar(
+              title:
+                  widget.category != null ? 'Edit Category' : 'Add Category'),
           backgroundColor: AppColor.Ef5f5f5,
           body: Padding(
             padding: EdgeInsets.symmetric(
@@ -180,7 +201,7 @@ class _AddCategoryState extends State<AddCategory> {
               child: Text('Name Category', style: AppStyle.bold_12)),
           const SizedBox(height: 10.0),
           CrTextField(
-            controller: nameController,
+            controller: _nameController,
             hintText: 'Name Category',
           ),
         ],

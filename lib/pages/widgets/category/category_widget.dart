@@ -163,12 +163,26 @@ class _CategoryWidgetState extends State<CategoryWidget> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: () {
-                // Implement edit functionality if needed
-              },
-              child: const Text('Edit'),
-            ),
+             GestureDetector(
+                onTap: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddCategory(
+                        category: category,
+                        onCategoryAdded: () {
+                          _refreshController.add(true);
+                        },
+                      ),
+                    ),
+                  );
+
+                  if (result == true) {
+                    // Refresh handled by onProductAdded callback
+                  }
+                },
+                child: const Text('Edit'),
+              ),
             GestureDetector(
               onTap: () => _deleteCategory(context, category),
               child: const Text('Delete'),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:web_admin/constants/double_extension.dart';
 import 'package:web_admin/pages/widgets/product/add_product.dart';
 import '../../../components/button/cr_elevated_button.dart';
 import '../../../components/snack_bar/td_snack_bar.dart';
@@ -143,7 +144,7 @@ class _ProductWidgetState extends State<ProductWidget> {
           ),
           const SizedBox(width: 10.0),
           SizedBox(width: 160, child: Text(product.quantity.toString())),
-          SizedBox(width: 160, child: Text('${product.price} VND')),
+          SizedBox(width: 160, child: Text(product.price.toVND())),
           const Spacer(),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

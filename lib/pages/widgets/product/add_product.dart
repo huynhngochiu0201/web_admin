@@ -176,7 +176,8 @@ class _AddProductState extends State<AddProduct> {
     return Stack(
       children: [
         Scaffold(
-          appBar: CustomAppBar(title: 'Add Category'),
+          appBar: CustomAppBar(
+              title: widget.product != null ? 'Edit Product' : 'Add Product'),
           backgroundColor: AppColor.Ef5f5f5,
           body: Form(
             key: _formKey,
