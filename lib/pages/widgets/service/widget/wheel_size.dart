@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:web_admin/pages/widgets/service/add_widget/add_wheel_size.dart';
-
 import '../../../../components/button/cr_elevated_button.dart';
 import '../../../../entities/models/wheel_size_model.dart';
 import '../../../../services/remote/wheel_size_service.dart';
-import '../add_widget/add_area.dart';
 
 class WheelSizeWidget extends StatefulWidget {
   const WheelSizeWidget({super.key});
@@ -25,18 +23,29 @@ class _WheelSizeWidgetState extends State<WheelSizeWidget> {
   }
 
   Future<void> _loadWheelSizes() async {
+    if (!mounted) return;
+    
+    setState(() {
+      isLoading = true;
+    });
+
     try {
-      final fetchedWheelSizes =
-          await _wheelSizeService.fetchAllWheelSizesByCreateAt();
+      final fetchedWheelSizes = await _wheelSizeService.fetchAllWheelSizesByCreateAt();
+      if (!mounted) return;
+      
       setState(() {
         wheelSizes = fetchedWheelSizes;
         isLoading = false;
       });
     } catch (e) {
-      // Có thể thêm xử lý hiển thị lỗi ở đây
+      if (!mounted) return;
+      
       setState(() {
         isLoading = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading wheel sizes: $e')),
+      );
     }
   }
 
@@ -50,16 +59,17 @@ class _WheelSizeWidgetState extends State<WheelSizeWidget> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
                 child: CrElevatedButton(
-                  text: 'Add Area',
+                  text: 'Add Wheel Size',
                   onPressed: () async {
                     final result = await Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => AddWheelSize()));
+                      MaterialPageRoute(
+                        builder: (context) => const AddWheelSize(),
+                      ),
+                    );
                     if (result == true) {
-                      _loadWheelSizes();
+                      await _loadWheelSizes();
                     }
                   },
                 ),

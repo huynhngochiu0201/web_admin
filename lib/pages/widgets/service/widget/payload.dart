@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:web_admin/pages/widgets/service/add_widget/add_payload.dart';
-
 import '../../../../components/button/cr_elevated_button.dart';
 import '../../../../entities/models/payload_model.dart';
 import '../../../../services/remote/payload_service.dart';
@@ -24,18 +23,30 @@ class _PayloadWidgetState extends State<PayloadWidget> {
   }
 
   Future<void> _loadPayloads() async {
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
     try {
       final fetchedPayloads =
           await _payloadService.fetchAllPayloadsByCreateAt();
+      if (!mounted) return;
+
       setState(() {
         payloads = fetchedPayloads;
         isLoading = false;
       });
     } catch (e) {
-      // Có thể thêm xử lý hiển thị lỗi ở đây
+      if (!mounted) return;
+
       setState(() {
         isLoading = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading payloads: $e')),
+      );
     }
   }
 
@@ -52,12 +63,15 @@ class _PayloadWidgetState extends State<PayloadWidget> {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 20.0, vertical: 20.0),
                 child: CrElevatedButton(
-                  text: 'Add Area',
+                  text: 'Add Payload',
                   onPressed: () async {
                     final result = await Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => AddPayload()));
+                      MaterialPageRoute(
+                        builder: (context) => const AddPayload(),
+                      ),
+                    );
                     if (result == true) {
-                      _loadPayloads();
+                      await _loadPayloads();
                     }
                   },
                 ),

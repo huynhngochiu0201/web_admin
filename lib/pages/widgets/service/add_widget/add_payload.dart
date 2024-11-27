@@ -48,55 +48,46 @@ class _AddPayloadState extends State<AddPayload> {
   }
 
   Future<void> _submitForm() async {
-    if (nameController.text.trim().isEmpty) {
+    if (nameController.text.isEmpty || priceController.text.isEmpty) {
       showTopSnackBar(
         context,
-        const TDSnackBar.error(message: 'Service name is required'),
+        const TDSnackBar.error(message: 'Please enter all required information'),
       );
       return;
     }
 
-    final price = double.tryParse(priceController.text);
-    if (price == null) {
-      showTopSnackBar(
-        context,
-        const TDSnackBar.error(message: 'Please enter a valid price'),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
+      String payloadName = nameController.text;
+      double price = double.parse(priceController.text);
+
       if (widget.payload != null) {
-        await _payloadService.updatePayload(
-          id: widget.payload!.id,
-          name: nameController.text.trim(),
-          price: price,
+        await _payloadService.updatePayloadById(
+          widget.payload!.id,
+          payloadName,
+          price,
         );
-        showTopSnackBar(
-          context,
-          const TDSnackBar.success(message: 'Service updated successfully'),
-        );
+        showTopSnackBar(context,
+            const TDSnackBar.success(message: 'Payload updated successfully'));
       } else {
         await _payloadService.addPayload(
-          name: nameController.text.trim(),
+          name: payloadName,
           price: price,
         );
-        showTopSnackBar(
-          context,
-          const TDSnackBar.success(message: 'Service added successfully'),
-        );
+        showTopSnackBar(context,
+            const TDSnackBar.success(message: 'Payload added successfully'));
       }
 
-      if (widget.onPayloadAdded != null) {
-        widget.onPayloadAdded!();
-      }
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(true);
     } catch (e) {
       showTopSnackBar(context, TDSnackBar.error(message: 'Error: $e'));
     } finally {
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 

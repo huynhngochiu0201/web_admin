@@ -100,10 +100,7 @@ class _AddWheelSizeState extends State<AddWheelSize> {
         );
       }
 
-      if (widget.onWheelSizeAdded != null) {
-        widget.onWheelSizeAdded!();
-      }
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(true);
     } catch (e) {
       showTopSnackBar(context, TDSnackBar.error(message: 'Error: $e'));
     } finally {

@@ -83,10 +83,7 @@ class _AddAreaState extends State<AddArea> {
             const TDSnackBar.success(message: 'Area added successfully'));
       }
 
-      if (widget.onAreaAdded != null) {
-        widget.onAreaAdded!();
-      }
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(true);
     } catch (e) {
       showTopSnackBar(context, TDSnackBar.error(message: 'Error:$e'));
     } finally {

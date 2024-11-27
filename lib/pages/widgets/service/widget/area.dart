@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-
 import '../../../../components/button/cr_elevated_button.dart';
 import '../../../../entities/models/area_model.dart';
 import '../../../../services/remote/area_service.dart';
@@ -16,6 +16,7 @@ class _AreaWidgetState extends State<AreaWidget> {
   final AreaService _areaService = AreaService();
   List<AreaModel> areas = [];
   bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -23,17 +24,29 @@ class _AreaWidgetState extends State<AreaWidget> {
   }
 
   Future<void> _loadAreas() async {
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
     try {
       final fetchedAreas = await _areaService.fetchAllAreasByCreateAt();
+      if (!mounted) return;
+
       setState(() {
         areas = fetchedAreas;
         isLoading = false;
       });
     } catch (e) {
-      // Có thể thêm xử lý hiển thị lỗi ở đây
+      if (!mounted) return;
+
       setState(() {
         isLoading = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading areas: $e')),
+      );
     }
   }
 
@@ -53,9 +66,12 @@ class _AreaWidgetState extends State<AreaWidget> {
                   text: 'Add Area',
                   onPressed: () async {
                     final result = await Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => AddArea()));
+                      MaterialPageRoute(
+                        builder: (context) => const AddArea(),
+                      ),
+                    );
                     if (result == true) {
-                      _loadAreas(); // Reload sau khi thêm mới
+                      await _loadAreas();
                     }
                   },
                 ),
@@ -68,57 +84,57 @@ class _AreaWidgetState extends State<AreaWidget> {
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     itemBuilder: (context, index) => Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 500.0,
+                            child: Text(areas[index].name ?? ''),
                           ),
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
+                          SizedBox(
+                            width: 100.0,
+                            child: Text('\$${areas[index].price}'),
+                          ),
+                          const Spacer(),
+                          Column(
                             children: [
-                              SizedBox(
-                                width: 500.0,
-                                child: Text(areas[index].name ?? ''),
+                              GestureDetector(
+                                onTap: () async {
+                                  final result = await Navigator.of(context)
+                                      .push(MaterialPageRoute(
+                                          builder: (context) => AddArea(
+                                                area: areas[index],
+                                              )));
+                                  if (result == true) {
+                                    _loadAreas();
+                                  }
+                                },
+                                child: Text('Edit'),
                               ),
-                              SizedBox(
-                                width: 100.0,
-                                child: Text('\$${areas[index].price}'),
-                              ),
-                              const Spacer(),
-                              Column(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () async {
-                                      final result = await Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                              builder: (context) => AddArea(
-                                                    area: areas[index],
-                                                  )));
-                                      if (result == true) {
-                                        _loadAreas();
-                                      }
-                                    },
-                                    child: Text('Edit'),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      if (await _showDeleteConfirmation(
-                                          context)) {
-                                        await _areaService
-                                            .deleteAreaById(areas[index].id);
-                                        _loadAreas();
-                                      }
-                                    },
-                                    child: Text('Delete'),
-                                  ),
-                                ],
+                              GestureDetector(
+                                onTap: () async {
+                                  if (await _showDeleteConfirmation(context)) {
+                                    await _areaService
+                                        .deleteAreaById(areas[index].id);
+                                    _loadAreas();
+                                  }
+                                },
+                                child: Text('Delete'),
                               ),
                             ],
                           ),
-                        ),
+                        ],
+                      ),
+                    ),
                     separatorBuilder: (context, index) =>
                         const SizedBox(height: 16.0),
-                    itemCount: areas.length),
-          )
+                    itemCount: areas.length,
+                  ),
+          ),
         ],
       ),
     );
