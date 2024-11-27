@@ -252,7 +252,6 @@ class _ProductWidgetState extends State<ProductWidget> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: AppColor.Ef5f5f5,
       body: Padding(

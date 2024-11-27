@@ -37,28 +37,35 @@ class _ServiceWidgetState extends State<ServiceWidget>
               children: [Text('Service', style: AppStyle.textHeader)],
             ),
             const SizedBox(height: 10.0),
-            Container(
-              height: 50.0,
-              padding: const EdgeInsets.all(6.0),
-              //margin: const EdgeInsets.symmetric(horizontal: 25.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(22.0),
-                color: Colors.transparent,
+            Theme(
+              data: Theme.of(context).copyWith(
+                tabBarTheme: TabBarTheme(
+                  overlayColor: WidgetStateProperty.all(Colors.transparent),
+                ),
               ),
-              child: TabBar(
-                unselectedLabelStyle: AppStyle.regular_12,
-                dividerColor: Colors.transparent,
-                controller: tabController,
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicator: BoxDecoration(
-                    borderRadius: BorderRadius.circular(22.0),
-                    color: AppColor.E43484B),
-                labelColor: Colors.white,
-                tabs: [
-                  Tab(text: 'Area'),
-                  Tab(text: 'Payload'),
-                  Tab(text: 'Wheel Size'),
-                ],
+              child: Container(
+                height: 50.0,
+                padding: const EdgeInsets.all(6.0),
+                //margin: const EdgeInsets.symmetric(horizontal: 25.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(22.0),
+                  color: Colors.transparent,
+                ),
+                child: TabBar(
+                  unselectedLabelStyle: AppStyle.regular_12,
+                  dividerColor: Colors.transparent,
+                  controller: tabController,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicator: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22.0),
+                      color: AppColor.E43484B),
+                  labelColor: Colors.white,
+                  tabs: [
+                    Tab(text: 'Area'),
+                    Tab(text: 'Payload'),
+                    Tab(text: 'Wheel Size'),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 10.0),
