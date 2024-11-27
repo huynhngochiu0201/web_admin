@@ -139,7 +139,7 @@ class AllPageState extends State<AllPage> {
                                             ),
                                             const SizedBox(height: 8.0),
                                             Text(
-                                              'Quantity: ${cartItem.quantity}',
+                                              'x: ${cartItem.quantity}',
                                             ),
                                           ],
                                         ),

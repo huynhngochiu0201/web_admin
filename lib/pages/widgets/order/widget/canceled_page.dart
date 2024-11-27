@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-import '../../../../constants/columndata.dart';
+import '../../../../entities/models/order_model.dart';
+import '../../../../services/remote/order_service.dart';
 
 class CanceledPage extends StatefulWidget {
   const CanceledPage({super.key});
@@ -10,76 +12,88 @@ class CanceledPage extends StatefulWidget {
 }
 
 class _CanceledPageState extends State<CanceledPage> {
-  List<ColumnData> get columns => const [
-        ColumnData(title: 'Order ID', width: 100),
-        ColumnData(title: 'Name', width: 100),
-        ColumnData(title: 'Items', width: 60),
-        ColumnData(title: 'Order Status', width: 90),
-      ];
-
-  Widget _buildTableHeader() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0, top: 20.0),
-      child: Row(
-        children: [
-          for (var i = 0; i < columns.length; i++) ...[
-            SizedBox(
-              width: columns[i].width,
-              child: Text(columns[i].title),
-            ),
-            if (i == 0) const SizedBox(width: 400.0),
-            if (i > 0 && i < columns.length - 1) const SizedBox(width: 150.0),
-            if (i == columns.length - 1) const SizedBox(width: 10.0),
-          ],
-        ],
-      ),
-    );
-  }
+  final OrderService _orderService = OrderService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTableHeader(),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 100,
-                    width: 100,
-                    color: Colors.red,
-                  ),
-                  const SizedBox(width: 20.0),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Order ID: 1234567890'),
-                            Text('Order Date: 2024-01-01'),
-                          ],
-                        ),
-                        const SizedBox(width: 20.0),
-                        const SizedBox(
-                            width: 150.0, child: Text('Name: Nguyen Van A')),
-                        const SizedBox(width: 100.0, child: Text('Items')),
-                        const SizedBox(
-                            width: 100.0, child: Text('Order Status')),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ));
+      backgroundColor: Colors.white,
+      body: StreamBuilder<List<OrderModel>>(
+        stream: _orderService.getOrdersByStatus('Cancelled'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+
+          final orders = snapshot.data ?? [];
+          if (orders.isEmpty) {
+            return const Center(
+              child: Text('No orders to ship.'),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: orders.length,
+            itemBuilder: (context, index) {
+              final order = orders[index];
+              return _buildOrderCard(order);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildOrderCard(OrderModel order) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Image.network(
+              order.cartData.first.productImage,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.error, color: Colors.red);
+              },
+            ),
+          ),
+          const SizedBox(width: 10.0),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Order ID: ${order.id}'),
+                    Text(
+                        'Order Date: ${order.createdAt != null ? DateFormat('dd/MM/yyyy HH:mm').format(order.createdAt!) : '-'}'),
+                  ],
+                ),
+                const SizedBox(width: 20.0),
+                SizedBox(width: 150.0, child: Text(order.name ?? "Unknown")),
+                SizedBox(
+                    width: 100.0, child: Text('${order.totalProduct ?? 0}')),
+                SizedBox(width: 100.0, child: Text('${order.status}')),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -5,8 +5,6 @@ import 'package:web_admin/pages/widgets/order/widget/canceled_page.dart';
 import 'package:web_admin/pages/widgets/order/widget/delivered_page.dart';
 import 'package:web_admin/pages/widgets/order/widget/pending_page.dart';
 import 'package:web_admin/pages/widgets/order/widget/service_page.dart';
-import 'package:web_admin/pages/widgets/order/widget/to_ship_page.dart';
-
 import '../../../constants/columndata.dart';
 
 class OrderWidget extends StatefulWidget {
@@ -26,7 +24,7 @@ class _OrderWidgetState extends State<OrderWidget>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 6, vsync: this);
+    tabController = TabController(length: 5, vsync: this);
 
     // Lắng nghe sự thay đổi của tabController
     tabController.addListener(() {
@@ -44,7 +42,7 @@ class _OrderWidgetState extends State<OrderWidget>
   List<ColumnData> get columns => const [
         ColumnData(title: 'Order ID', width: 100),
         ColumnData(title: 'Name', width: 100),
-        ColumnData(title: 'Items', width: 60),
+        ColumnData(title: 'Items', width: 45),
         ColumnData(title: 'Order Status', width: 90),
       ];
 
@@ -58,8 +56,8 @@ class _OrderWidgetState extends State<OrderWidget>
               width: columns[i].width,
               child: Text(columns[i].title),
             ),
-            if (i == 0) const SizedBox(width: 400.0),
-            if (i > 0 && i < columns.length - 1) const SizedBox(width: 150.0),
+            if (i == 0) const SizedBox(width: 435.0),
+            if (i > 0 && i < columns.length - 1) const SizedBox(width: 135.0),
             if (i == columns.length - 1) const SizedBox(width: 10.0),
           ],
         ],
@@ -115,7 +113,6 @@ class _OrderWidgetState extends State<OrderWidget>
                         ),
                         tabs: const [
                           Tab(text: 'All'),
-                          Tab(text: 'To Ship'),
                           Tab(text: 'Service'),
                           Tab(text: 'Pending'),
                           Tab(text: 'Delivered'),
@@ -139,7 +136,6 @@ class _OrderWidgetState extends State<OrderWidget>
                         controller: tabController,
                         children: const [
                           AllPage(),
-                          ToShipPage(),
                           ServicePage(),
                           PendingPage(),
                           DeliveredPage(),
