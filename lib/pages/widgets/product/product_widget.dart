@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:web_admin/constants/columndata.dart';
 import 'package:web_admin/constants/double_extension.dart';
 import 'package:web_admin/pages/widgets/product/add_product.dart';
 import '../../../components/button/cr_elevated_button.dart';
@@ -11,16 +11,6 @@ import '../../../entities/models/product_model.dart';
 import '../../../services/remote/product_service.dart';
 import 'package:intl/intl.dart';
 
-class ColumnData {
-  final String title;
-  final double width;
-
-  const ColumnData({
-    required this.title,
-    required this.width,
-  });
-}
-
 class ProductWidget extends StatefulWidget {
   const ProductWidget({super.key});
 
@@ -29,41 +19,12 @@ class ProductWidget extends StatefulWidget {
 }
 
 class _ProductWidgetState extends State<ProductWidget> {
-  late Future<List<ProductModel>> _productsFuture;
-  final StreamController<bool> _refreshController = StreamController<bool>();
-
   List<ColumnData> get columns => const [
         ColumnData(title: 'Product', width: 100),
         ColumnData(title: 'Quantity', width: 100),
         ColumnData(title: 'Price', width: 100),
         ColumnData(title: 'Time', width: 100),
       ];
-
-  @override
-  void initState() {
-    super.initState();
-    _productsFuture = _fetchProducts();
-    _refreshController.stream.listen((_) {
-      setState(() {
-        _productsFuture = _fetchProducts();
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _refreshController.close();
-    super.dispose();
-  }
-
-  Future<List<ProductModel>> _fetchProducts() async {
-    try {
-      ProductService productService = ProductService();
-      return await productService.fetchAllProductsByCreateAt();
-    } catch (e) {
-      throw Exception('Error fetching products: $e');
-    }
-  }
 
   Future<void> _deleteProduct(ProductModel product) async {
     final bool? confirm = await showDialog<bool>(
@@ -93,9 +54,6 @@ class _ProductWidgetState extends State<ProductWidget> {
       ProductService productService = ProductService();
       await productService.deleteProductById(product.id,
           categoryId: product.categoryId);
-      setState(() {
-        _productsFuture = _fetchProducts();
-      });
 
       if (mounted) {
         showTopSnackBar(
@@ -184,15 +142,13 @@ class _ProductWidgetState extends State<ProductWidget> {
                     MaterialPageRoute(
                       builder: (context) => AddProduct(
                         product: product,
-                        onProductAdded: () {
-                          _refreshController.add(true);
-                        },
+                        onProductAdded: () {},
                       ),
                     ),
                   );
 
                   if (result == true) {
-                    // Refresh handled by onProductAdded callback
+                    // Giao diện sẽ tự động cập nhật qua StreamBuilder
                   }
                 },
                 child: const Text('Edit'),
@@ -216,15 +172,13 @@ class _ProductWidgetState extends State<ProductWidget> {
           context,
           MaterialPageRoute(
             builder: (context) => AddProduct(
-              onProductAdded: () {
-                _refreshController.add(true);
-              },
+              onProductAdded: () {},
             ),
           ),
         );
 
         if (result == true) {
-          // Đã được xử lý bởi onProductAdded callback
+          // Giao diện sẽ tự động cập nhật qua StreamBuilder
         }
       },
     );
@@ -279,8 +233,8 @@ class _ProductWidgetState extends State<ProductWidget> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: FutureBuilder<List<ProductModel>>(
-                    future: _productsFuture,
+                  child: StreamBuilder<List<ProductModel>>(
+                    stream: ProductService().fetchProductsStream(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());

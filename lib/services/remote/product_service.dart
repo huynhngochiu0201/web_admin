@@ -6,7 +6,19 @@ import '../../constants/define_collection.dart';
 
 class ProductService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  // Lấy danh sách sản phẩm theo thời gian thực
+  Stream<List<ProductModel>> fetchProductsStream() {
+    return _firestore
+        .collection(AppDefineCollection.APP_PRODUCT)
+        .orderBy('createAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return ProductModel.fromJson(doc.data());
+      }).toList();
+    });
+  }
 
   // Thêm sản phẩm mới
   Future<void> addNewProduct(AddProductModel product) async {
@@ -18,7 +30,8 @@ class ProductService {
 
       String imageUrl = '';
       if (product.image != null) {
-        final Reference ref = _storage.ref().child(imageStoragePath);
+        final Reference ref =
+            FirebaseStorage.instance.ref().child(imageStoragePath);
         final UploadTask uploadTask = ref.putData(product.image!);
         final TaskSnapshot downloadUrl = await uploadTask;
         imageUrl = await downloadUrl.ref.getDownloadURL();
@@ -27,19 +40,21 @@ class ProductService {
       await _firestore
           .collection(AppDefineCollection.APP_PRODUCT)
           .doc(docId)
-          .set(ProductModel(
-            id: docId,
-            categoryId: product.cateId,
-            name: product.productName,
-            image: imageUrl,
-            price: product.price,
-            description: product.description,
-            viewCount: 0,
-            orderCount: 0,
-            favourute: 0,
-            quantity: product.quantity,
-            createAt: Timestamp.now(),
-          ).toJson());
+          .set(
+            ProductModel(
+              id: docId,
+              categoryId: product.cateId,
+              name: product.productName,
+              image: imageUrl,
+              price: product.price,
+              description: product.description,
+              viewCount: 0,
+              orderCount: 0,
+              favourute: 0,
+              quantity: product.quantity,
+              createAt: Timestamp.now(),
+            ).toJson(),
+          );
     } catch (e) {
       throw Exception('Error adding new product: $e');
     }
@@ -49,28 +64,26 @@ class ProductService {
   Future<void> updateProduct(String productId, AddProductModel product) async {
     try {
       String imageUrl = '';
-      
-      // Nếu có ảnh mới, upload và lấy URL
+
       if (product.image != null) {
-        String imageStoragePath = 
+        String imageStoragePath =
             '/${AppDefineCollection.APP_PRODUCT}/${product.cateId}/$productId';
-        
-        // Xóa ảnh cũ nếu có
+
         try {
-          final Reference oldRef = _storage.ref().child(imageStoragePath);
+          final Reference oldRef =
+              FirebaseStorage.instance.ref().child(imageStoragePath);
           await oldRef.delete();
         } catch (e) {
-          // Bỏ qua lỗi nếu không có ảnh cũ
+          // Ignore if no old image exists
         }
 
-        // Upload ảnh mới
-        final Reference ref = _storage.ref().child(imageStoragePath);
+        final Reference ref =
+            FirebaseStorage.instance.ref().child(imageStoragePath);
         final UploadTask uploadTask = ref.putData(product.image!);
         final TaskSnapshot downloadUrl = await uploadTask;
         imageUrl = await downloadUrl.ref.getDownloadURL();
       }
 
-      // Cập nhật thông tin sản phẩm
       final Map<String, dynamic> updateData = {
         'categoryId': product.cateId,
         'name': product.productName,
@@ -79,7 +92,6 @@ class ProductService {
         'quantity': product.quantity,
       };
 
-      // Chỉ cập nhật URL ảnh nếu có ảnh mới
       if (imageUrl.isNotEmpty) {
         updateData['image'] = imageUrl;
       }
@@ -93,62 +105,25 @@ class ProductService {
     }
   }
 
-  // Xóa sản phẩm theo ID
+  // Xóa sản phẩm
   Future<void> deleteProductById(String productId, {String? categoryId}) async {
     try {
-      // Xóa sản phẩm từ Firestore
       await _firestore
           .collection(AppDefineCollection.APP_PRODUCT)
           .doc(productId)
           .delete();
 
-      // Xóa ảnh sản phẩm từ Firebase Storage nếu tồn tại
       String imageStoragePath =
           '/${AppDefineCollection.APP_PRODUCT}/${categoryId ?? ''}/$productId';
-      final Reference ref = _storage.ref().child(imageStoragePath);
 
-      final ListResult result = await _storage.ref().listAll();
+      final Reference ref =
+          FirebaseStorage.instance.ref().child(imageStoragePath);
+      final ListResult result = await FirebaseStorage.instance.ref().listAll();
       if (result.items.any((item) => item.fullPath == imageStoragePath)) {
         await ref.delete();
       }
     } catch (e) {
       throw Exception('Error deleting product: $e');
-    }
-  }
-
-  // Lấy tất cả sản phẩm, sắp xếp theo ngày tạo
-  Future<List<ProductModel>> fetchAllProductsByCreateAt() async {
-    try {
-      final querySnapshot = await _firestore
-          .collection(AppDefineCollection.APP_PRODUCT)
-          .orderBy('createAt', descending: true)
-          .get();
-      return querySnapshot.docs
-          .map((doc) => ProductModel.fromJson(doc.data()))
-          .toList();
-    } catch (e) {
-      throw Exception('Error fetching products: $e');
-    }
-  }
-
-  // Tìm kiếm sản phẩm
-  Future<List<ProductModel>> searchProducts(String searchText) async {
-    String searchTermLower = searchText.toLowerCase();
-    List<ProductModel> matchedProducts = [];
-
-    try {
-      QuerySnapshot querySnapshot =
-          await _firestore.collection(AppDefineCollection.APP_PRODUCT).get();
-      for (var doc in querySnapshot.docs) {
-        String nameLower = doc['name'].toLowerCase();
-        if (nameLower.contains(searchTermLower)) {
-          matchedProducts
-              .add(ProductModel.fromJson(doc.data() as Map<String, dynamic>));
-        }
-      }
-      return matchedProducts;
-    } catch (e) {
-      throw Exception('Error searching products: $e');
     }
   }
 }
