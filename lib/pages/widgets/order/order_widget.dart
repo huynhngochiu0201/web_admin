@@ -125,7 +125,7 @@ class _OrderWidgetState extends State<OrderWidget>
                       valueListenable: _currentTabNotifier,
                       builder: (context, currentTabIndex, child) {
                         // Chỉ hiển thị header nếu không phải tab All hoặc Service
-                        if (currentTabIndex == 0 || currentTabIndex == 2) {
+                        if (currentTabIndex == 0 || currentTabIndex == 1) {
                           return const SizedBox.shrink();
                         }
                         return _buildTableHeader();
