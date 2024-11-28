@@ -296,130 +296,134 @@ class _HomeWidgetState extends State<HomeWidget> {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.0), color: Colors.white),
-      child: BarChart(
-        BarChartData(
-          alignment: BarChartAlignment.spaceBetween,
-          maxY: 500, // Giá trị lớn nhất trên trục Y
-          barGroups: [
-            // Nhóm 1: Physical
-            BarChartGroupData(
-              x: 0,
-              barRods: [
-                BarChartRodData(
-                  toY: 512, // Total
-                  color: Colors.blue,
-                  width: 15,
-                  borderRadius: BorderRadius.circular(4),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: BarChart(
+          BarChartData(
+            alignment: BarChartAlignment.spaceBetween,
+            maxY: 500, // Giá trị lớn nhất trên trục Y
+            barGroups: [
+              // Nhóm 1: Physical
+              BarChartGroupData(
+                x: 0,
+                barRods: [
+                  BarChartRodData(
+                    toY: 512, // Total
+                    color: Colors.blue,
+                    width: 15,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  BarChartRodData(
+                    toY: 315, // Used
+                    color: Colors.amber,
+                    width: 15,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  BarChartRodData(
+                    toY: 197, // Free
+                    color: Colors.red,
+                    width: 15,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ],
+                barsSpace: 8,
+              ),
+              BarChartGroupData(
+                x: 1,
+                barRods: [
+                  BarChartRodData(
+                    toY: 150, // Total
+                    color: Colors.amber,
+                    width: 15,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  BarChartRodData(
+                    toY: 90, // Used
+                    color: Colors.red,
+                    width: 15,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  BarChartRodData(
+                    toY: 60, // Free
+                    color: Colors.blue,
+                    width: 15,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ],
+                barsSpace: 8,
+              ),
+              BarChartGroupData(
+                x: 2,
+                barRods: [
+                  BarChartRodData(
+                    toY: 300, // Total
+                    color: Colors.blue,
+                    width: 15,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  BarChartRodData(
+                    toY: 200, // Used
+                    color: Colors.amber,
+                    width: 15,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  BarChartRodData(
+                    toY: 100, // Free
+                    color: Colors.red,
+                    width: 15,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ],
+                barsSpace: 8,
+              ),
+            ],
+            titlesData: FlTitlesData(
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 40,
+                  getTitlesWidget: (value, meta) {
+                    switch (value.toInt()) {
+                      case 0:
+                        return const Text('1 Month',
+                            style: TextStyle(fontSize: 12));
+                      case 1:
+                        return const Text('2 Month',
+                            style: TextStyle(fontSize: 12));
+                      case 2:
+                        return const Text('3 Month',
+                            style: TextStyle(fontSize: 12));
+                      default:
+                        return const Text('');
+                    }
+                  },
                 ),
-                BarChartRodData(
-                  toY: 315, // Used
-                  color: Colors.amber,
-                  width: 15,
-                  borderRadius: BorderRadius.circular(4),
+              ),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 40,
+                  getTitlesWidget: (value, meta) {
+                    if (value % 100 == 0) {
+                      return Text('${value.toInt()}');
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
-                BarChartRodData(
-                  toY: 197, // Free
-                  color: Colors.red,
-                  width: 15,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ],
-              barsSpace: 8,
-            ),
-            BarChartGroupData(
-              x: 1,
-              barRods: [
-                BarChartRodData(
-                  toY: 150, // Total
-                  color: Colors.amber,
-                  width: 15,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                BarChartRodData(
-                  toY: 90, // Used
-                  color: Colors.red,
-                  width: 15,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                BarChartRodData(
-                  toY: 60, // Free
-                  color: Colors.blue,
-                  width: 15,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ],
-              barsSpace: 8,
-            ),
-            BarChartGroupData(
-              x: 2,
-              barRods: [
-                BarChartRodData(
-                  toY: 300, // Total
-                  color: Colors.blue,
-                  width: 15,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                BarChartRodData(
-                  toY: 200, // Used
-                  color: Colors.amber,
-                  width: 15,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                BarChartRodData(
-                  toY: 100, // Free
-                  color: Colors.red,
-                  width: 15,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ],
-              barsSpace: 8,
-            ),
-          ],
-          titlesData: FlTitlesData(
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 40,
-                getTitlesWidget: (value, meta) {
-                  switch (value.toInt()) {
-                    case 0:
-                      return const Text('Physical',
-                          style: TextStyle(fontSize: 12));
-                    case 1:
-                      return const Text('RAM', style: TextStyle(fontSize: 12));
-                    case 2:
-                      return const Text('Virtual',
-                          style: TextStyle(fontSize: 12));
-                    default:
-                      return const Text('');
-                  }
-                },
               ),
             ),
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 40,
-                getTitlesWidget: (value, meta) {
-                  if (value % 100 == 0) {
-                    return Text('${value.toInt()}');
-                  }
-                  return const SizedBox.shrink();
-                },
+            gridData: FlGridData(
+              show: true,
+              getDrawingHorizontalLine: (value) => FlLine(
+                color: Colors.grey.shade300,
+                strokeWidth: 1,
               ),
             ),
-          ),
-          gridData: FlGridData(
-            show: true,
-            getDrawingHorizontalLine: (value) => FlLine(
-              color: Colors.grey.shade300,
-              strokeWidth: 1,
+            borderData: FlBorderData(
+              show: false,
             ),
+            groupsSpace: 40,
           ),
-          borderData: FlBorderData(
-            show: false,
-          ),
-          groupsSpace: 40,
         ),
       ),
     );
