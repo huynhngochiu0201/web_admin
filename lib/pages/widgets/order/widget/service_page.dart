@@ -29,15 +29,15 @@ class _ServicePageState extends State<ServicePage>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-            width: 230,
+            width: 150,
             child: Text('Name'),
           ),
           SizedBox(
-            width: 280,
+            width: 400,
             child: Text('Address'),
           ),
           SizedBox(
-            width: 180,
+            width: 100,
             child: Text('Phone Number'),
           ),
           SizedBox(
@@ -65,7 +65,7 @@ class _ServicePageState extends State<ServicePage>
             child: Container(
               height: 50.0,
               padding: const EdgeInsets.all(6.0),
-              //margin: const EdgeInsets.symmetric(horizontal: 25.0),
+              margin: const EdgeInsets.symmetric(horizontal: 25.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(22.0),
                 color: Colors.transparent,

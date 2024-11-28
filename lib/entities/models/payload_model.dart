@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PayloadModel {
-  final double price;
+  final double? price;
   final String id;
   final String? name;
   final Timestamp? createAt;
@@ -9,7 +9,7 @@ class PayloadModel {
   PayloadModel({
     required this.id,
     this.name,
-    required this.price,
+    this.price,
     this.createAt,
   });
 
@@ -17,7 +17,8 @@ class PayloadModel {
     return PayloadModel(
       id: json['id'] as String,
       name: json['name'] as String?,
-      price: json['price'] as double,
+      price: (json['price'] as num?)
+          ?.toDouble(), // Chuyển int hoặc double thành double
       createAt: json['createAt'] as Timestamp?,
     );
   }

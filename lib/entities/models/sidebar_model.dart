@@ -22,4 +22,6 @@ List<SidebarModel> sidebarItems = [
       title: 'Product', icon: Icons.message, route: RouteNames.product),
   SidebarModel(
       title: 'Service', icon: Icons.analytics, route: RouteNames.service),
+  SidebarModel(
+      title: 'setting', icon: Icons.analytics, route: RouteNames.setting),
 ];

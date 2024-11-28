@@ -76,7 +76,7 @@ class ReplaceTirePage extends StatelessWidget {
                         ),
                         // Address
                         SizedBox(
-                          width: 200,
+                          width: 400,
                           child: Text(
                             service.address,
                             overflow: TextOverflow.ellipsis,

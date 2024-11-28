@@ -10,7 +10,6 @@ class RescuePage extends StatelessWidget {
     final service = Service();
     final List<String> statuses = ['Pending', 'Delivered', 'Cancelled'];
 
-    // Hàm cập nhật trạng thái
     Future<void> updateStatus(
         ServiceModel serviceModel, String newStatus) async {
       try {
@@ -75,7 +74,7 @@ class RescuePage extends StatelessWidget {
                         ),
                         // Address
                         SizedBox(
-                          width: 200,
+                          width: 400,
                           child: Text(
                             service.address,
                             overflow: TextOverflow.ellipsis,

@@ -13,9 +13,8 @@ class RouteConfig {
     RouteNames.home: (context) => const HomeWidget(),
     RouteNames.order: (context) => const OrderWidget(),
     RouteNames.category: (context) => const CategoryWidget(),
-    RouteNames.product: (context) => const ProductWidget(
-          
-        ),
+    RouteNames.product: (context) => const ProductWidget(),
     RouteNames.service: (context) => const ServiceWidget(),
+    RouteNames.setting: (context) => const ServiceWidget(),
   };
 }
