@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:web_admin/components/table/custom_table.dart';
 
 import '../../../../entities/models/order_model.dart';
 import '../../../../services/remote/order_service.dart';
@@ -34,65 +35,48 @@ class _CanceledPageState extends State<CanceledPage> {
           final orders = snapshot.data ?? [];
           if (orders.isEmpty) {
             return const Center(
-              child: Text('No orders to ship.'),
+              child: Text('No canceled orders.'),
             );
           }
 
-          return ListView.builder(
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              final order = orders[index];
-              return _buildOrderCard(order);
-            },
+          return CustomTable(
+            columns: const [
+              DataColumn(label: Text('Image')),
+              DataColumn(label: Text('Order ID')),
+              DataColumn(label: Text('Order Date')),
+              DataColumn(label: Text('Customer Name')),
+              DataColumn(label: Text('Total Products')),
+              DataColumn(label: Text('Status')),
+            ],
+            rows: orders.map((order) {
+              return DataRow(
+                cells: [
+                  DataCell(
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        order.cartData.first.productImage,
+                        fit: BoxFit.cover,
+                        width: 50.0,
+                        height: 50.0,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.error, color: Colors.red);
+                        },
+                      ),
+                    ),
+                  ),
+                  DataCell(Text(order.id ?? 'N/A')),
+                  DataCell(Text(order.createdAt != null
+                      ? DateFormat('dd/MM/yyyy HH:mm').format(order.createdAt!)
+                      : '-')),
+                  DataCell(Text(order.name ?? 'Unknown')),
+                  DataCell(Text('${order.totalProduct ?? 0}')),
+                  DataCell(Text(order.status ?? 'N/A')),
+                ],
+              );
+            }).toList(),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildOrderCard(OrderModel order) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 100,
-            width: 100,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Image.network(
-              order.cartData.first.productImage,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(Icons.error, color: Colors.red);
-              },
-            ),
-          ),
-          const SizedBox(width: 10.0),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Order ID: ${order.id}'),
-                    Text(
-                        'Order Date: ${order.createdAt != null ? DateFormat('dd/MM/yyyy HH:mm').format(order.createdAt!) : '-'}'),
-                  ],
-                ),
-                const SizedBox(width: 20.0),
-                SizedBox(width: 150.0, child: Text(order.name ?? "Unknown")),
-                SizedBox(
-                    width: 100.0, child: Text('${order.totalProduct ?? 0}')),
-                SizedBox(width: 100.0, child: Text('${order.status}')),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

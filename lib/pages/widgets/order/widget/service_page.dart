@@ -22,33 +22,6 @@ class _ServicePageState extends State<ServicePage>
     tabController = TabController(length: 2, vsync: this);
   }
 
-  Widget _buildTableHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: 150,
-            child: Text('Name'),
-          ),
-          SizedBox(
-            width: 400,
-            child: Text('Address'),
-          ),
-          SizedBox(
-            width: 100,
-            child: Text('Phone Number'),
-          ),
-          SizedBox(
-            width: 100,
-            child: Text('Service Status'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +60,6 @@ class _ServicePageState extends State<ServicePage>
             ),
           ),
           const SizedBox(height: 10.0),
-          _buildTableHeader(),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -96,7 +68,7 @@ class _ServicePageState extends State<ServicePage>
               ),
               child: TabBarView(
                 controller: tabController,
-                children: const [
+                children: [
                   RescuePage(),
                   ReplaceTirePage(),
                 ],

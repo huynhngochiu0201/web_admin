@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:web_admin/constants/double_extension.dart';
+import 'package:web_admin/pages/widgets/home/widget/all_page.dart';
 import '../../../constants/app_color.dart';
 import '../../../constants/app_style.dart';
 import '../../../entities/models/order_model.dart';
@@ -43,76 +44,141 @@ class _HomeWidgetState extends State<HomeWidget> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: AppColor.Ef5f5f5,
-      body: Padding(
+      body: ListView(
         padding: EdgeInsets.symmetric(
           horizontal: screenWidth * 0.05,
         ).copyWith(top: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Home', style: AppStyle.textHeader),
+            ],
+          ),
+          const SizedBox(height: 20.0),
+          GridView(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              mainAxisSpacing: 16.0,
+              crossAxisSpacing: 16.0,
+              childAspectRatio: 400 / 130,
+              maxCrossAxisExtent: 400,
+              mainAxisExtent: 130,
+            ),
+            children: [
+              FutureBuilder<List<OrderModel>>(
+                future: ordersFuture,
+                builder: (context, snapshot) {
+                  int orderCount = snapshot.data?.length ?? 0;
+                  return _buildCard(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AllPage(),
+                        ),
+                      );
+                    },
+                    icon: Icons.article,
+                    title: 'Order',
+                    value: orderCount.toString(),
+                    color: Colors.white,
+                  );
+                },
+              ),
+              FutureBuilder<int>(
+                future: allServicesFuture,
+                builder: (context, snapshot) {
+                  int service = snapshot.data ?? 0;
+                  return _buildCard(
+                    icon: Icons.list,
+                    title: 'Service',
+                    value: service.toString(),
+                    color: Colors.white,
+                  );
+                },
+              ),
+              FutureBuilder<double>(
+                future: totalPriceFuture,
+                builder: (context, snapshot) {
+                  double totalPrice = snapshot.data ?? 0.0;
+                  return _buildCard(
+                    icon: Icons.attach_money,
+                    title: 'Total Sales',
+                    value: totalPrice.toVND(),
+                    color: Colors.white,
+                  );
+                },
+              ),
+            ],
+          ),
+          SizedBox(height: 20.0),
+          GridView(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              mainAxisSpacing: 16.0,
+              crossAxisSpacing: 16.0,
+              childAspectRatio: 1,
+              maxCrossAxisExtent: 500,
+            ),
+            children: [
+              _buildPieChart(screenWidth),
+              _buildGroupedBarChart(),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCard({
+    required IconData icon,
+    final Function()? onPressed,
+    required String title,
+    required String value,
+    required Color color,
+  }) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+            color: AppColor.white,
+            borderRadius: BorderRadius.circular(20.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 3,
+                offset: Offset(0, 1),
+              )
+            ]),
+        child: Row(
           children: [
-            Row(
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Home', style: AppStyle.textHeader),
-              ],
-            ),
-            const SizedBox(height: 20.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                FutureBuilder<List<OrderModel>>(
-                  future: ordersFuture,
-                  builder: (context, snapshot) {
-                    int orderCount = snapshot.data?.length ?? 0;
-                    return _buildCard(
-                      icon: Icons.article,
-                      title: 'Order',
-                      value: orderCount.toString(),
-                      color: Colors.white,
-                    );
-                  },
+                FittedBox(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 26.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-                FutureBuilder<int>(
-                  future: allServicesFuture,
-                  builder: (context, snapshot) {
-                    int service = snapshot.data ?? 0;
-                    return _buildCard(
-                      icon: Icons.list,
-                      title: 'Service',
-                      value: service.toString(),
-                      color: Colors.white,
-                    );
-                  },
-                ),
-                FutureBuilder<double>(
-                  future: totalPriceFuture,
-                  builder: (context, snapshot) {
-                    double totalPrice = snapshot.data ?? 0.0;
-                    return _buildCard(
-                      icon: Icons.attach_money,
-                      title: 'Total Sales',
-                      value: totalPrice.toVND(),
-                      color: Colors.white,
-                    );
-                  },
+                FittedBox(
+                  child: Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 ),
               ],
-            ),
-            SizedBox(height: 20.0),
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(child: _buildPieChart()),
-                  SizedBox(width: 20.0),
-                  Expanded(
-                      child: Column(
-                    children: [
-                      _buildLegend(),
-                      Expanded(child: _buildGroupedBarChart()),
-                    ],
-                  ))
-                ],
-              ),
             ),
           ],
         ),
@@ -120,48 +186,7 @@ class _HomeWidgetState extends State<HomeWidget> {
     );
   }
 
-  Widget _buildCard({
-    required IconData icon,
-    required String title,
-    required String value,
-    required Color color,
-  }) {
-    return Card(
-      color: color,
-      child: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: SizedBox(
-          height: 100,
-          width: 300,
-          child: Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 26.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    value,
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPieChart() {
+  Widget _buildPieChart(double screenWidth) {
     return FutureBuilder(
       future: Future.wait([ordersFuture, allServicesFuture]),
       builder: (context, snapshot) {
@@ -184,37 +209,16 @@ class _HomeWidgetState extends State<HomeWidget> {
         return StatefulBuilder(
           builder: (context, setState) {
             return Container(
+              padding: EdgeInsets.symmetric(vertical: 10.0),
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8.0)),
-              child: Stack(
-                children: [
-                  // Hiển thị legend với giá trị orders và services
-                  Positioned(
-                    top: 10.0,
-                    right: 50.0,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildLegendItem(
-                          color: Colors.blue,
-                          label: 'Orders',
-                          value: orders, // Giá trị orders
-                        ),
-                        const SizedBox(height: 10.0),
-                        _buildLegendItem(
-                          color: Colors.green,
-                          label: 'Services',
-                          value: services.toDouble(), // Giá trị services
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Hiển thị PieChart
-                  Center(
-                    child: SizedBox(
-                      width: 400,
-                      height: 400,
+              child: FittedBox(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: 300,
+                      height: 300,
                       child: PieChart(
                         PieChartData(
                           sections: [
@@ -262,8 +266,26 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 10.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildLegendItem(
+                          color: Colors.blue,
+                          label: 'Orders',
+                          value: orders,
+                        ),
+                        SizedBox(width: 30.0),
+                        const SizedBox(height: 10.0),
+                        _buildLegendItem(
+                          color: Colors.green,
+                          label: 'Services',
+                          value: services.toDouble(), // Giá trị services
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -294,135 +316,139 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   Widget _buildGroupedBarChart() {
     return Container(
+      padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0), color: Colors.white),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: BarChart(
-          BarChartData(
-            alignment: BarChartAlignment.spaceBetween,
-            maxY: 500, // Giá trị lớn nhất trên trục Y
-            barGroups: [
-              // Nhóm 1: Physical
-              BarChartGroupData(
-                x: 0,
-                barRods: [
-                  BarChartRodData(
-                    toY: 512, // Total
-                    color: Colors.blue,
-                    width: 15,
-                    borderRadius: BorderRadius.circular(4),
+          color: Colors.white, borderRadius: BorderRadius.circular(8.0)),
+      child: FittedBox(
+        child: SizedBox(
+          width: 330,
+          height: 330,
+          child: BarChart(
+            BarChartData(
+              alignment: BarChartAlignment.spaceBetween,
+              maxY: 500, // Giá trị lớn nhất trên trục Y
+              barGroups: [
+                // Nhóm 1: Physical
+                BarChartGroupData(
+                  x: 0,
+                  barRods: [
+                    BarChartRodData(
+                      toY: 512, // Total
+                      color: Colors.blue,
+                      width: 15,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    BarChartRodData(
+                      toY: 315, // Used
+                      color: Colors.amber,
+                      width: 15,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    BarChartRodData(
+                      toY: 197, // Free
+                      color: Colors.red,
+                      width: 15,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                  barsSpace: 8,
+                ),
+                BarChartGroupData(
+                  x: 1,
+                  barRods: [
+                    BarChartRodData(
+                      toY: 150, // Total
+                      color: Colors.amber,
+                      width: 15,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    BarChartRodData(
+                      toY: 90, // Used
+                      color: Colors.red,
+                      width: 15,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    BarChartRodData(
+                      toY: 60, // Free
+                      color: Colors.blue,
+                      width: 15,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                  barsSpace: 8,
+                ),
+                BarChartGroupData(
+                  x: 2,
+                  barRods: [
+                    BarChartRodData(
+                      toY: 300, // Total
+                      color: Colors.blue,
+                      width: 15,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    BarChartRodData(
+                      toY: 200, // Used
+                      color: Colors.amber,
+                      width: 15,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    BarChartRodData(
+                      toY: 100, // Free
+                      color: Colors.red,
+                      width: 15,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                  barsSpace: 8,
+                ),
+              ],
+              titlesData: FlTitlesData(
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 40,
+                    getTitlesWidget: (value, meta) {
+                      switch (value.toInt()) {
+                        case 0:
+                          return const Text('1 Month',
+                              style: TextStyle(fontSize: 12));
+                        case 1:
+                          return const Text('2 Month',
+                              style: TextStyle(fontSize: 12));
+                        case 2:
+                          return const Text('3 Month',
+                              style: TextStyle(fontSize: 12));
+                        default:
+                          return const Text('');
+                      }
+                    },
                   ),
-                  BarChartRodData(
-                    toY: 315, // Used
-                    color: Colors.amber,
-                    width: 15,
-                    borderRadius: BorderRadius.circular(4),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 40,
+                    getTitlesWidget: (value, meta) {
+                      if (value % 100 == 0) {
+                        return Text('${value.toInt()}');
+                      }
+                      return const SizedBox.shrink();
+                    },
                   ),
-                  BarChartRodData(
-                    toY: 197, // Free
-                    color: Colors.red,
-                    width: 15,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ],
-                barsSpace: 8,
-              ),
-              BarChartGroupData(
-                x: 1,
-                barRods: [
-                  BarChartRodData(
-                    toY: 150, // Total
-                    color: Colors.amber,
-                    width: 15,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  BarChartRodData(
-                    toY: 90, // Used
-                    color: Colors.red,
-                    width: 15,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  BarChartRodData(
-                    toY: 60, // Free
-                    color: Colors.blue,
-                    width: 15,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ],
-                barsSpace: 8,
-              ),
-              BarChartGroupData(
-                x: 2,
-                barRods: [
-                  BarChartRodData(
-                    toY: 300, // Total
-                    color: Colors.blue,
-                    width: 15,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  BarChartRodData(
-                    toY: 200, // Used
-                    color: Colors.amber,
-                    width: 15,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  BarChartRodData(
-                    toY: 100, // Free
-                    color: Colors.red,
-                    width: 15,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ],
-                barsSpace: 8,
-              ),
-            ],
-            titlesData: FlTitlesData(
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 40,
-                  getTitlesWidget: (value, meta) {
-                    switch (value.toInt()) {
-                      case 0:
-                        return const Text('1 Month',
-                            style: TextStyle(fontSize: 12));
-                      case 1:
-                        return const Text('2 Month',
-                            style: TextStyle(fontSize: 12));
-                      case 2:
-                        return const Text('3 Month',
-                            style: TextStyle(fontSize: 12));
-                      default:
-                        return const Text('');
-                    }
-                  },
                 ),
               ),
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 40,
-                  getTitlesWidget: (value, meta) {
-                    if (value % 100 == 0) {
-                      return Text('${value.toInt()}');
-                    }
-                    return const SizedBox.shrink();
-                  },
+              gridData: FlGridData(
+                show: true,
+                getDrawingHorizontalLine: (value) => FlLine(
+                  color: Colors.grey.shade300,
+                  strokeWidth: 1,
                 ),
               ),
-            ),
-            gridData: FlGridData(
-              show: true,
-              getDrawingHorizontalLine: (value) => FlLine(
-                color: Colors.grey.shade300,
-                strokeWidth: 1,
+              borderData: FlBorderData(
+                show: false,
               ),
+              groupsSpace: 40,
             ),
-            borderData: FlBorderData(
-              show: false,
-            ),
-            groupsSpace: 40,
           ),
         ),
       ),

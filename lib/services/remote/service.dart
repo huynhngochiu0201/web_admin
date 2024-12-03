@@ -25,12 +25,14 @@ class Service {
           address: data['address'],
           phone: data['phone'],
           note: data['note'],
-          service: data['service'],
+          nameservice: data['nameservice'],
           area: data['area'],
           payload: data['payload'],
           wheelSize: data['wheelSize'],
           totalPrice: data['totalPrice'],
-          createdAt: (data['createdAt'] as Timestamp).toDate(),
+          createdAt: data['createdAt'] is Timestamp
+              ? (data['createdAt'] as Timestamp).toDate()
+              : DateTime.parse(data['createdAt']),
           status: data['status'],
           userId: doc.id, // Document ID
         );

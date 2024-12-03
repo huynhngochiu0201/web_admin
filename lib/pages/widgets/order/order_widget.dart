@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:web_admin/constants/app_style.dart';
-import 'package:web_admin/pages/widgets/order/widget/all_page.dart';
+import 'package:web_admin/pages/widgets/home/widget/all_page.dart';
 import 'package:web_admin/pages/widgets/order/widget/canceled_page.dart';
 import 'package:web_admin/pages/widgets/order/widget/delivered_page.dart';
 import 'package:web_admin/pages/widgets/order/widget/pending_page.dart';
@@ -45,25 +45,6 @@ class _OrderWidgetState extends State<OrderWidget>
         ColumnData(title: 'Items', width: 45),
         ColumnData(title: 'Order Status', width: 90),
       ];
-
-  Widget _buildTableHeader() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0, top: 20.0),
-      child: Row(
-        children: [
-          for (var i = 0; i < columns.length; i++) ...[
-            SizedBox(
-              width: columns[i].width,
-              child: Text(columns[i].title),
-            ),
-            if (i == 0) const SizedBox(width: 435.0),
-            if (i > 0 && i < columns.length - 1) const SizedBox(width: 135.0),
-            if (i == columns.length - 1) const SizedBox(width: 10.0),
-          ],
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +93,7 @@ class _OrderWidgetState extends State<OrderWidget>
                               color: Colors.blue), // Tùy chỉnh chỉ báo
                         ),
                         tabs: const [
-                          Tab(text: 'All'),
+                          // Tab(text: 'All'),
                           Tab(text: 'Service'),
                           Tab(text: 'Pending'),
                           Tab(text: 'Delivered'),
@@ -128,14 +109,14 @@ class _OrderWidgetState extends State<OrderWidget>
                         if (currentTabIndex == 0 || currentTabIndex == 1) {
                           return const SizedBox.shrink();
                         }
-                        return _buildTableHeader();
+                        return Container();
                       },
                     ),
                     Expanded(
                       child: TabBarView(
                         controller: tabController,
                         children: const [
-                          AllPage(),
+                          // AllPage(),
                           ServicePage(),
                           PendingPage(),
                           DeliveredPage(),

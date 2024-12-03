@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:web_admin/constants/columndata.dart';
 import 'package:web_admin/constants/double_extension.dart';
 import 'package:web_admin/pages/widgets/product/add_product.dart';
 import '../../../components/button/cr_elevated_button.dart';
@@ -19,13 +18,6 @@ class ProductWidget extends StatefulWidget {
 }
 
 class _ProductWidgetState extends State<ProductWidget> {
-  List<ColumnData> get columns => const [
-        ColumnData(title: 'Product', width: 100),
-        ColumnData(title: 'Quantity', width: 100),
-        ColumnData(title: 'Price', width: 100),
-        ColumnData(title: 'Time', width: 100),
-      ];
-
   Future<void> _deleteProduct(ProductModel product) async {
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -77,53 +69,57 @@ class _ProductWidgetState extends State<ProductWidget> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 100,
-                width: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5.0),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5.0),
-                  child: Image.network(
-                    product.image ?? '-',
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Center(child: Icon(Icons.error));
-                    },
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return const Center(child: CircularProgressIndicator());
-                    },
+          Expanded(
+            flex: 5,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FittedBox(
+                  child: Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5.0),
+                      child: Image.network(
+                        product.image,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(child: Icon(Icons.error));
+                        },
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        },
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 10.0),
-              SizedBox(
-                width: 400,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product.name,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text('ID: ${product.id}', overflow: TextOverflow.ellipsis),
-                  ],
+                const SizedBox(width: 10.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.name,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text('ID: ${product.id}', overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(width: 10.0),
-          SizedBox(width: 160, child: Text(product.quantity.toString())),
-          SizedBox(width: 160, child: Text(product.price.toVND())),
-          SizedBox(
-            width: 100,
+          Expanded(flex: 2, child: Text(product.quantity.toString())),
+          Expanded(flex: 2, child: Text(product.price.toVND())),
+          Expanded(
+            flex: 2,
             child: Text(
               product.createAt != null
                   ? DateFormat('dd/MM/yyyy HH:mm')
@@ -131,33 +127,35 @@ class _ProductWidgetState extends State<ProductWidget> {
                   : '-',
             ),
           ),
-          const Spacer(),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddProduct(
-                        product: product,
-                        onProductAdded: () {},
+          Expanded(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddProduct(
+                          product: product,
+                          onProductAdded: () {},
+                        ),
                       ),
-                    ),
-                  );
+                    );
 
-                  if (result == true) {
-                    // Giao diện sẽ tự động cập nhật qua StreamBuilder
-                  }
-                },
-                child: const Text('Edit'),
-              ),
-              GestureDetector(
-                onTap: () => _deleteProduct(product),
-                child: const Text('Delete'),
-              ),
-            ],
+                    if (result == true) {
+                      // Giao diện sẽ tự động cập nhật qua StreamBuilder
+                    }
+                  },
+                  child: const Text('Edit'),
+                ),
+                GestureDetector(
+                  onTap: () => _deleteProduct(product),
+                  child: const Text('Delete'),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -189,15 +187,11 @@ class _ProductWidgetState extends State<ProductWidget> {
       padding: const EdgeInsets.only(left: 20.0),
       child: Row(
         children: [
-          for (var i = 0; i < columns.length; i++) ...[
-            SizedBox(
-              width: columns[i].width,
-              child: Text(columns[i].title),
-            ),
-            if (i == 0) const SizedBox(width: 410.0),
-            if (i > 0 && i < columns.length - 1) const SizedBox(width: 70.0),
-            if (i == columns.length - 1) const SizedBox(width: 55.0),
-          ],
+          Expanded(flex: 5, child: Text('Product')),
+          Expanded(flex: 2, child: Text('Quantitl')),
+          Expanded(flex: 2, child: Text('Price')),
+          Expanded(flex: 2, child: Text('Time')),
+          Expanded(flex: 1, child: Text('')),
         ],
       ),
     );

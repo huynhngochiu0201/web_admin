@@ -3,7 +3,7 @@ class ServiceModel {
   final String address;
   final String phone;
   final String note;
-  final String service;
+  final String nameservice;
   final String? area;
   final String? payload;
   final String? wheelSize;
@@ -16,7 +16,7 @@ class ServiceModel {
     required this.address,
     required this.phone,
     required this.note,
-    required this.service,
+    required this.nameservice,
     this.area,
     this.payload,
     this.wheelSize,
@@ -32,7 +32,7 @@ class ServiceModel {
       'address': address,
       'phone': phone,
       'note': note,
-      'service': service,
+      'nameservice': nameservice,
       'area': area,
       'payload': payload,
       'wheelSize': wheelSize,

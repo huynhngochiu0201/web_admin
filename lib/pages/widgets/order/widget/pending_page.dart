@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:web_admin/components/table/custom_table.dart';
 import 'package:web_admin/entities/models/order_model.dart';
 import '../../../../services/remote/order_service.dart';
 
@@ -38,86 +39,60 @@ class _PendingPageState extends State<PendingPage> {
             );
           }
 
-          return ListView.builder(
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              final order = orders[index];
-              return _buildOrderCard(order);
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildOrderCard(OrderModel order) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 100,
-            width: 100,
-            decoration: BoxDecoration(),
-            child: order.cartData.isNotEmpty
-                ? ClipRRect(
+          return CustomTable(
+            columns: [
+              const DataColumn(label: Text('Image')),
+              const DataColumn(label: Text('Order ID')),
+              const DataColumn(label: Text('Order Date')),
+              const DataColumn(label: Text('Customer Name')),
+              const DataColumn(label: Text('Total Products')),
+              const DataColumn(label: Text('Status')),
+            ],
+            rows: orders.map((order) {
+              return DataRow(cells: [
+                DataCell(
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
                     child: Image.network(
                       order.cartData.first.productImage,
                       fit: BoxFit.cover,
+                      width: 50.0,
+                      height: 50.0,
                       errorBuilder: (context, error, stackTrace) {
                         return const Icon(Icons.error, color: Colors.red);
                       },
                     ),
-                  )
-                : const Icon(Icons.local_shipping,
-                    size: 40, color: Colors.blue),
-          ),
-          const SizedBox(width: 10.0),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Order ID: ${order.id}'),
-                    Text(
-                        'Order Date: ${order.createdAt != null ? DateFormat('dd/MM/yyyy HH:mm').format(order.createdAt!) : '-'}'),
-                  ],
-                ),
-                const SizedBox(width: 20.0),
-                SizedBox(width: 150.0, child: Text(order.name ?? "Unknown")),
-                SizedBox(
-                    width: 100.0, child: Text('${order.totalProduct ?? 0}')),
-                DropdownButton<String>(
-                  dropdownColor: Colors.white,
-                  borderRadius: BorderRadius.circular(5.0),
-                  value: order.status,
-                  icon: const Icon(Icons.arrow_drop_down),
-                  iconSize: 24,
-                  elevation: 16,
-                  style: const TextStyle(color: Colors.black),
-                  underline: Container(
-                    height: 2,
                   ),
-                  onChanged: (String? newStatus) {
-                    if (newStatus != null) {
-                      _updateOrderStatus(order, newStatus);
-                    }
-                  },
-                  items:
-                      _statuses.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
                 ),
-              ],
-            ),
-          ),
-        ],
+                DataCell(Text(order.id ?? '-')),
+                DataCell(Text(
+                  order.createdAt != null
+                      ? DateFormat('dd/MM/yyyy HH:mm').format(order.createdAt!)
+                      : '-',
+                )),
+                DataCell(Text(order.name ?? 'Unknown')),
+                DataCell(Text('${order.totalProduct ?? 0}')),
+                DataCell(
+                  DropdownButton<String>(
+                    value: order.status,
+                    items:
+                        _statuses.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newStatus) {
+                      if (newStatus != null) {
+                        _updateOrderStatus(order, newStatus);
+                      }
+                    },
+                  ),
+                ),
+              ]);
+            }).toList(),
+          );
+        },
       ),
     );
   }

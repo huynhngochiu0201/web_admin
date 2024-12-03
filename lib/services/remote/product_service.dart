@@ -48,7 +48,7 @@ class ProductService {
               image: imageUrl,
               price: product.price,
               description: product.description,
-              viewCount: 0,
+              sold: 0,
               orderCount: 0,
               favourute: 0,
               quantity: product.quantity,

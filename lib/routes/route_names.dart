@@ -4,5 +4,4 @@ class RouteNames {
   static const String category = '/category';
   static const String product = '/product';
   static const String service = '/service';
-  static const String setting = '/setting';
 }

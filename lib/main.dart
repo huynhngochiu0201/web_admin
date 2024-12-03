@@ -10,39 +10,49 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.web,
   );
-
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({
-    super.key,
-  });
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      routerConfig: router,
+      builder: (context, child) {
+        return AuthStateWidget();
+      },
+    );
+  }
+}
 
-          if (snapshot.hasData) {
-            return MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              routerConfig: router,
-            );
-          }
-          return const LoginPages();
-        },
-      ),
+class AuthStateWidget extends StatelessWidget {
+  const AuthStateWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasData) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            routerConfig: router,
+          );
+        }
+
+        return const LoginPages();
+      },
     );
   }
 }

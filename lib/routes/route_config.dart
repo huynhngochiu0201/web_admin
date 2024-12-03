@@ -15,6 +15,5 @@ class RouteConfig {
     RouteNames.category: (context) => const CategoryWidget(),
     RouteNames.product: (context) => const ProductWidget(),
     RouteNames.service: (context) => const ServiceWidget(),
-    RouteNames.setting: (context) => const ServiceWidget(),
   };
 }

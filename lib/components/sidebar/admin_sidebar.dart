@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:web_admin/entities/models/sidebar_model.dart';
-
+import 'package:web_admin/extensions/build_context_extension.dart';
+import 'package:web_admin/pages/auth/login_pages.dart';
 import '../../constants/app_color.dart';
 
 class AdminSidebar extends StatefulWidget {
@@ -19,38 +21,55 @@ class _AdminSidebarState extends State<AdminSidebar> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 200,
+    return Column(
+      children: [
+        _buildSidebarItems(context),
+      ],
+    );
+  }
+
+  Widget _buildSidebarItems(BuildContext context) {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 500),
+      width: context.responsive ? 70 : 200,
+      height: MediaQuery.of(context).size.height,
+      padding: EdgeInsets.symmetric(
+          horizontal: context.responsive ? 10 : 16, vertical: 16),
       child: Column(
         children: [
-          _buildSidebarItems(),
+          Expanded(
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: sidebarItems.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (_, index) => _buildSidebarItem(index, context),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: IconButton(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => LoginPages()),
+                );
+              },
+              icon: Icon(Icons.logout),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSidebarItems() {
-    return Container(
-      width: 200,
-      padding: const EdgeInsets.all(16),
-      child: ListView.separated(
-        shrinkWrap: true,
-        itemCount: sidebarItems.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
-        itemBuilder: (_, index) => _buildSidebarItem(index),
-      ),
-    );
-  }
-
-  Widget _buildSidebarItem(int index) {
+  Widget _buildSidebarItem(int index, BuildContext context) {
     final isSelected = selectedIndex == index;
-
     return GestureDetector(
       onTap: () => _handleItemClick(index),
-      child: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-        width: double.infinity,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 500),
+        padding: EdgeInsets.symmetric(
+            vertical: 10.0, horizontal: context.responsive ? 13 : 16.0),
         decoration: BoxDecoration(
           color: isSelected ? AppColor.E464447 : Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -62,13 +81,19 @@ class _AdminSidebarState extends State<AdminSidebar> {
               sidebarItems[index].icon,
               color: isSelected ? Colors.white : Colors.black,
             ),
-            const SizedBox(width: 16),
-            Text(
-              sidebarItems[index].title,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
+            AnimatedContainer(
+                duration: Duration(
+                  milliseconds: 500,
+                ),
+                width: context.responsive ? 0 : 16),
+            if (!context.responsive)
+              Text(
+                sidebarItems[index].title,
+                style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
+                  color: isSelected ? Colors.white : Colors.black,
+                ),
               ),
-            ),
           ],
         ),
       ),

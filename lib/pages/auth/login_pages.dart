@@ -68,9 +68,11 @@ class _LoginPagesState extends State<LoginPages> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColor.E7E8E9,
-      body: Form(
-        key: formKey,
-        child: Center(
+      body: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: Form(
+          key: formKey,
           child: SingleChildScrollView(
             child: Column(
               children: [
